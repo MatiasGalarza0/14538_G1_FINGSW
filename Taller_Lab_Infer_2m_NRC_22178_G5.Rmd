@@ -1,0 +1,330 @@
+---
+title: "Inferencias sobre dos muestras"
+author: "Galarza Matias, Reinoso Jose, Rodriguez David, Rojas Matias"
+date: "2025-06-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## SImulacion de una variable x con distribucion de media u y varianza poblacional sigma cuadrado.
+x1: desgaste de una superficie de engranaje (micras) en acero al carbano
+$\ mu= 2.5$
+$\sigma=0.4$
+
+x2: desgaste de una superficie de engranaje (micras) en aleacion de acero y aluminio 
+$\ mu= 2.8$
+$\sigma=0.5$
+
+### Ejercicio 1
+```{r}
+set.seed(14)
+desgaste1<-rnorm(n= 36, mean = 2.5, sd = 0.4)
+head(desgaste1)
+desgaste2<-rnorm(n= 42, mean = 2.8, sd = 0.5)
+head(desgaste2)
+
+
+```
+## Prueba de normalidad
+Shapiro: shapiro.test, si n<= 50
+Kolmogorov Smiron: ks.test, si n>50
+
+### Ejercicio 2
+Probar que la variable X: desgaste sigue una distribucion normal en cada tipo de acero.
+
+*a. Acero al carbon*
+
+Paso 1
+
+$H_0:$ El desgate 1 sigue una distribucion normal.
+
+$H_1:$ El desgate 1 no sigue una distribucion normal.
+
+Paso 2
+
+$\alpha=0.05$
+
+Paso 3
+```{r}
+shapiro.test(desgaste1)
+
+
+
+```
+paso 4
+
+p-value = 0.6387 < 0.05 ,(F)
+
+Por lo tanto $H_0$ se acepta
+
+El desgate 1 sigue una distribucion normal.
+
+**b. De acero y aluminio **
+
+paso 1
+
+$H_0:$ El desgate 2 sigue una distribucion normal.
+
+$H_1:$ El desgate 2 no sigue una distribucion normal.
+
+paso 2
+
+$\alpha=0.05$
+
+paso 3
+```{r}
+shapiro.test(desgaste2)
+```
+paso 4
+
+p-value = 0.9268 < 0.05, (F)
+
+Por lo tanto $H_0$ se acepta.
+
+El desgate 2 sigue una distribucion normal.
+
+
+## Prueba de hipotesis dobre la diferencia de medias de muestras independientes con varianzas conocidas.
+
+### Ejercicio 3
+
+Con una significancia del 5% comprobar que eldesgaste promedio del acero al carbono es el mismo que el desgaste promedio de acero con aleacion de aluminio.
+
+*El desgaste en cada variante de acero sigue una distribucion normal.*
+
+*La desviacion estandar poblacionales correspondientes en cada variante del acero son respectivamente 0.4 y 0.5*
+
+paso 1
+
+$H_0: \mu_1 = \mu_2$
+
+$H_1: \mu_1 \neq \mu_2$
+
+paso 2
+
+$\alpha=0.05$
+
+paso 3
+```{r}
+library(PASWR)
+z.test(
+  desgaste1,
+  sigma.x = 0.4,
+  y = desgaste2,
+  sigma.y = 0.5,
+  alternative = "two.sided",
+ 
+  conf.level = 0.95)
+
+
+```
+paso 4
+
+p-value = 0.2263 < 0.05, (F)
+
+No existe evidencia suficiente para rechazar $H_0$
+
+Por lo tanto $H_0$ se acepta: $H_0: \mu_1 = \mu_2$
+
+
+## Verificacion de condiciones para aplicar el t.test para dos variables independientes.
+
+
+
+ Importar los datos de los pesos.
+
+```{r}
+library(readxl)
+Pesos_pruebasFisicas_1_ <- read_excel("C:/Users/USUARIO/Desktop/Lab_2025_22178/Pesos_pruebasFisicas (1).xlsx")
+head(Pesos_pruebasFisicas_1_,2)
+
+```
+### Ejercicio 4
+
+Supuesto 1. Normalidad de los pesos en hombres y mujeres 
+
+Hipotesis de normalidad para hombres:
+
+$H_0:$ El peso de los hombres sigue una distribución normal.
+
+$H_1:$ El peso de los no hombres sigue una distribución normal.
+
+Hipotesis de normalidad para mujeres:
+
+$H_0:$ El peso de las mujeres no sigue una distribución normal.
+
+$H_1:$ El peso de las no mujeres no sigue una distribución normal.
+```{r}
+#tapply(Pesos_pruebasFisicas_1_$Peso_lb, Pesos_pruebasFisicas_1_$Sexo,mean)
+#mean(Pesos_pruebasFisicas_1_$Peso_lb)
+attach(Pesos_pruebasFisicas_1_)
+tapply(Peso_lb,Sexo,mean)
+table(Sexo)
+
+tapply(Peso_lb,Sexo,shapiro.test)
+
+
+
+```
+### Ejercicio 5
+
+Supuesto 2.  Homogeneidad de las varianzas de pesos entre hombres y mujeres
+
+
+Paso 1
+
+$H_0: \sigma_H^2 = \sigma_H^2$
+
+$H_1: \sigma_H^2 \neq \sigma_H^2$
+
+Paso 2
+
+$\alpha=0.05$
+
+Paso 3
+```{r}
+
+peso_H<-Pesos_pruebasFisicas_1_[Sexo == "Hombre",]$Peso_lb
+peso_M<-Pesos_pruebasFisicas_1_[Sexo == "Mujer",]$Peso_lb
+
+var.test(peso_H, peso_M, ratio = 1,
+         alternative = "two.sided",
+         conf.level = 0.95)
+```
+Paso 4
+
+p-value = 1.995e-05 < 0.05 (V), $H_0$ se rechaza.
+
+Por lo tanto se $H_1$ se acepta: $H_1: \sigma_H^2 \neq \sigma_H^2$ 
+
+las varianzas del peso entre hombre y mujer son diferentes.
+
+
+## Prueba de hipotesis dobre la diferencia de medias de muestras independientes con varianzas conocidas 
+
+### Ejercicio 6
+
+Comprobar que el peso promedio de los hombres es superior al peso promedio de las mujeres.
+
+Condiciones:
+
+**Solo para aplicar el procedimiento, se asume que el peso sigue una distribucion normal en Hombres y Mujeres.**
+
+Se comprobo que las varianzas son diferentes , por ello se aplica el caso 2.2
+
+Paso 1
+
+$H_0: \mu_H <= \mu_H$
+
+$H_1: \mu_H^2 > \_H^2$
+
+Paso 2
+
+$\alpha=0.05$
+
+Paso 3
+```{r}
+t.test(peso_H, peso_M,
+       alternative = "greater",
+       var.equal = FALSE,
+       conf.level = 0.95)
+```
+Paso 4
+
+p-value = 4.8e-12 < 0.05 (V), se rechaza H0,
+
+Por lo tanto $H_1$ se acepta:$H_1: \mu_H^2 > \_H^2$
+
+El peso promedio de los hombres supera al peso promedio de las mujeres.
+
+## Prueba de hipotesis dobre la diferencia de medias de muestras independientes con varianzas conocidas ,pero iguales.
+
+### Ejercicio 7
+
+Con una significancia del 5% comprobar que el ancho del sepalo es el mismo en las espcies versicolor y virginica. Debe filtrar los datos. No usar dplyr.
+Suponga que las varianzas son iguales.
+
+Paso 1
+
+$H_0: \mu_1 = \mu_2$
+
+$H_1: \mu_1 \neq \mu_2$
+
+Paso 2
+
+$\alpha=0.05$
+
+Paso 3
+```{r}
+# Cargar el dataset iris
+data(iris)
+
+# Filtrar datos para versicolor y virginica sin dplyr
+versicolor <- iris[iris$Species == "versicolor", "Sepal.Width"]
+virginica <- iris[iris$Species == "virginica", "Sepal.Width"]
+
+# Prueba t para muestras independientes con varianzas iguales
+resultado <- t.test(versicolor, virginica, var.equal = TRUE, conf.level = 0.95)
+print(resultado)
+```
+Paso 4
+
+p-value = 0.001819 < 0.05 ,(V) se rechaza $H_0$,
+
+Se acepta $H_1: \mu_1 \neq \mu_2$ 
+
+El ancho del sépalo no es igual en versicolor y virginica.
+
+### Ejercicio 8
+
+Realizar una prueba de datos pareados (colesterol)
+Recuerde que este ejercicio es para muestras dependientes (misma muestra en dos eventos, por ejemplo: antes y despues)
+
+Paso 1
+
+$ H_0 $: $ \mu_d = 0 $ (No hay diferencia en el colesterol promedio antes y después del tratamiento).
+
+$ H_1 $: $ \mu_d \neq 0 $ (Hay una diferencia en el colesterol promedio antes y después del tratamiento).
+
+Paso 2
+
+$\alpha=0.05$
+
+Paso 3
+```{r}
+set.seed(123)
+
+n <- 20
+colesterol_antes <- rnorm(n, mean = 200, sd = 20) 
+
+colesterol_despues <- colesterol_antes - rnorm(n, mean = 10, sd = 5)  
+
+
+cat("Colesterol antes:", round(colesterol_antes, 2), "\n")
+
+cat("Colesterol después:", round(colesterol_despues, 2), "\n")
+
+# Prueba t para datos pareados
+resultado <- t.test(colesterol_antes, colesterol_despues, paired = TRUE, conf.level = 0.95)
+
+print(resultado)
+```
+Paso 4
+
+p-value = 2.382e-09 < 0.05 ,(V) se rechaza $H_0$
+
+Por lo tanto $H_1$ se acepta: 
+
+Hay una diferencia en el colesterol promedio antes y después.
+
+
+
+
+
+
+
+
+
+
