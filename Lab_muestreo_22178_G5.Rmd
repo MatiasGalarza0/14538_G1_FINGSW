@@ -1,0 +1,106 @@
+---
+title: "Muestreo"
+author: "Galarza Matias, Reinoso Jose, Rodriguez David, Rojas Matias"
+date: "2025-06-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Simulacion de conjuntos aleatorios de datos
+### Ejercicio 1
+a. Generar un vector con 520 datos numerados del 1 a 520
+
+b. Generar un vector de datos de area de construccioon de departamentos en el sur de Quito con distribucion noraml de media 80 m2 y desv. estan. 5 m2
+
+c. Generar un conjunto de datos de la condicion de la condicion de la vivienda: propia(30% datos) o alquilada(70% datos)
+
+d.Crear un data frame con la union de los tres vectores
+```{r}
+id <- 1:520
+set.seed(13)
+area <- rnorm(520,80,5)
+(vp <- 0.3*520)
+(va <- 0.7*520)
+casa <- c(rep("propia",vp), rep("alquilada",va))
+datos_v <- data.frame(id,area,casa)
+```
+## Medidas descriptivas para la poblacion (parametros)
+
+### Ejercicio 2
+
+a. Hallar la media poblacional del area de construccion
+
+b. Hallar la proporcion proporcional
+```{r}
+(mu <- mean(datos_v$area))
+mu
+prop=mean(datos_v$casa =="propia")
+prop
+
+```
+
+
+## Muestreo en poblacion finitas o infinitas
+
+### Ejercicio 3
+
+a. Calcular n con la formuloa 5, para estimar la proporcion de viviendas propias.
+
+b. Obtenga una muestra aleatoria simple de tamaño n con el conjunto de datos del ejercicio 1
+```{r}
+N=520
+e=0.05
+p=0.1
+q=1-p
+s=0.05
+z=qnorm(0.025, mean = 0, sd = 1, lower.tail = TRUE)
+n=z^2*N*p*q/((N-1)*e^2+z^2*p*q)
+n=ceiling(n)
+n
+```
+## Medidas descriptivas de la muestra(estimadores, estadisticos)
+
+### Ejercico 4
+
+a. obtener la muestra aleatoria de 110 elementos de la poblacion.
+
+b. Obtener el area promedio de la vivienda en la muestra.
+
+c. Obtener la proporcion de viviendas propias en la muestra.
+```{r}
+set.seed(13)
+muestra <- datos_v[sample(nrow(datos_v), 110), ]
+muestra
+prom_m <- mean(muestra$area)
+prom_m
+prop_m=mean(muestra$casa =="propia")
+prop_m
+```
+
+## Error de muestro
+
+### Ejercicio 5
+
+a. Hallar el error de muestreo para la estimacion del area promedio.
+
+b. Que porcentaje de error se ha cometido.
+
+c. Hallar el error de muestreo para la estimacion de la proporcion de la vivienda propia.
+
+d. Que procentaje de error de muestreo se ha cometido.
+```{r}
+eu = abs(mu-prom_m)
+eu
+porcentaje = (eu / mu) * 100
+paste0(round(porcentaje, 2)," %")
+ep = abs(prop-prop_m)
+ep
+porcentaje1 = ep*100
+paste0(round(porcentaje1,2),"%")
+
+```
+
+ 
